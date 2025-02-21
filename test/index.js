@@ -15,12 +15,12 @@ const compressedi64 = fs.readFileSync(__dirname + "/compressedi64.zfp");
 const float32s = new Float32Array(
   uncompressed.buffer,
   uncompressed.byteOffset,
-  uncompressed.byteLength / 4
+  uncompressed.byteLength / 4,
 );
 const int64s = new BigInt64Array(
   uncompressedi64.buffer,
   uncompressedi64.byteOffset,
-  uncompressedi64.byteLength / 8
+  uncompressedi64.byteLength / 8,
 );
 
 // NOTE: we cannot put this within a mocha test because wasm compiles faster
@@ -31,7 +31,7 @@ assert.throws(() => {
 
 describe("decompression", () => {
   it("waits until module is ready", (done) => {
-    Zfp.isLoaded.then(done);
+    Zfp.isLoaded.then(done).catch(done);
   });
 
   it("decompresses vec3f", () => {
@@ -54,10 +54,7 @@ describe("decompression", () => {
     assert(result.dimensions === 3);
     assert(result.type === 3);
     for (var i = 0; i < result.data.byteLength; i++) {
-      assert(
-        result.data[i] === float32s[i],
-        `${i}: ${result.data[i]} !== ${float32s[i]}`
-      );
+      assert(result.data[i] === float32s[i], `${i}: ${result.data[i]} !== ${float32s[i]}`);
     }
 
     Zfp.freeBuffer(zfpBuffer);
@@ -83,10 +80,7 @@ describe("decompression", () => {
     assert(result.dimensions === 1);
     assert(result.type === 2);
     for (var i = 0; i < result.data.byteLength; i++) {
-      assert(
-        result.data[i] === int64s[i],
-        `${i}: ${result.data[i]} !== ${int64s[i]}`
-      );
+      assert(result.data[i] === int64s[i], `${i}: ${result.data[i]} !== ${int64s[i]}`);
     }
 
     Zfp.freeBuffer(zfpBuffer);
@@ -110,10 +104,7 @@ describe("decompression", () => {
     const zfpBuffer = Zfp.createBuffer();
 
     assert.throws(() => {
-      Zfp.decompress(
-        zfpBuffer,
-        new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-      );
+      Zfp.decompress(zfpBuffer, new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
     });
 
     Zfp.freeBuffer(zfpBuffer);
@@ -133,12 +124,9 @@ describe("compression", () => {
     const output = Zfp.compress(zfpBuffer, zfpInput, { tolerance: 1 });
 
     // Compare byte-for-byte with `compressed`
-    assert(output.byteLength === compressed.byteLength)
+    assert(output.byteLength === compressed.byteLength);
     for (var i = 0; i < output.byteLength; i++) {
-      assert(
-        output[i] === compressed[i],
-        `${i}: ${output[i]} !== ${compressed[i]}`
-      );
+      assert(output[i] === compressed[i], `${i}: ${output[i]} !== ${compressed[i]}`);
     }
 
     Zfp.freeBuffer(zfpBuffer);
@@ -155,12 +143,9 @@ describe("compression", () => {
     const output = Zfp.compress(zfpBuffer, zfpInput, { tolerance: 1 });
 
     // Compare byte-for-byte with `compressed`
-    assert(output.byteLength === compressed.byteLength)
+    assert(output.byteLength === compressed.byteLength);
     for (var i = 0; i < output.byteLength; i++) {
-      assert(
-        output[i] === compressed[i],
-        `${i}: ${output[i]} !== ${compressed[i]}`
-      );
+      assert(output[i] === compressed[i], `${i}: ${output[i]} !== ${compressed[i]}`);
     }
 
     Zfp.freeBuffer(zfpBuffer);
@@ -178,12 +163,9 @@ describe("compression", () => {
     const output = Zfp.compress(zfpBuffer, zfpInput);
 
     // Compare byte-for-byte with `compressedi64`
-    assert(output.byteLength === compressedi64.byteLength)
+    assert(output.byteLength === compressedi64.byteLength);
     for (var i = 0; i < output.byteLength; i++) {
-      assert(
-        output[i] === compressedi64[i],
-        `${i}: ${output[i]} !== ${compressedi64[i]}`
-      );
+      assert(output[i] === compressedi64[i], `${i}: ${output[i]} !== ${compressedi64[i]}`);
     }
 
     Zfp.freeBuffer(zfpBuffer);

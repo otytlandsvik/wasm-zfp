@@ -208,7 +208,11 @@ module.exports.decompress = function decompress(zfpBuffer, src) {
  * the module before it is loaded will throw an error.
  * @type {Promise<void>}
  */
-module.exports.isLoaded = ModulePromise.then((mod) => mod["ready"].then(() => {}));
+module.exports.isLoaded = ModulePromise.then((mod) => {
+  new Promise((resolve) => {
+    mod.onRuntimeInitialized = resolve;
+  });
+});
 
 // Wait for the promise returned from ModuleFactory to resolve
 ModulePromise.then((mod) => {
